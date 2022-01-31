@@ -1,3 +1,8 @@
+/**
+ * @file snakes.js
+ * @author souravjena
+ * @breif Plain JS for retro snakes game.
+ */
 
 function init_game() {
 
@@ -14,10 +19,14 @@ function init_game() {
 	pen.fillRect(0, 0, game_canvas.width, game_canvas.height);
 
 
+	// Set score to 0
+	game_score = 0;
 
+	// Init the Snake
+	init_snake();
 
-	// Initialize the Snake
-	init_snake()
+	// Init Food
+	init_food();
 
 }
 
@@ -57,6 +66,16 @@ function init_snake() {
 			var head_x = this.body_coord[0].x;
 			var head_y = this.body_coord[0].y;
 
+			
+			if( (head_x == food.x) && (head_y == food.y) ){
+				food.create_new();
+				game_score++;
+			
+			} else {
+				this.body_coord.pop();
+			}
+
+			
 			// Add new cell to the snake based on the
 			// key pressed
 			if(this.direction=="u"){
@@ -77,7 +96,17 @@ function init_snake() {
 			}
 
 			this.body_coord.unshift({x: new_x, y: new_y});
-			this.body_coord.pop();
+			// this.body_coord.pop();
+
+			// Check if heads goes out of the edge of the arena
+			var edge_x = Math.round(game_canvas.width/this.cell_size);
+			var edge_y = Math.round(game_canvas.height/this.cell_size);
+
+			if(this.body_coord[0].y < 0 || this.body_coord[0].x < 0 || 
+				this.body_coord[0].x > edge_x || this.body_coord[0].y > edge_y){
+				// Gave Over, Restart
+				init_game();
+			}
 
 		},
 
@@ -96,6 +125,40 @@ function init_snake() {
 }
 
 
+function init_food (){
+
+	food = {
+		x: 0,
+		y: 0,
+		color:"red",
+		cell_size: snake.cell_size,
+
+		get_coord: function () {
+			this.x = Math.round(Math.random()* ((game_canvas.width - this.cell_size)/this.cell_size) );
+			this.y = Math.round(Math.random()* ((game_canvas.height - this.cell_size)/this.cell_size) );
+		},
+
+		draw: function () {
+			pen.fillStyle = this.color;
+			pen.fillRect(this.x * this.cell_size, this.y * this.cell_size, this.cell_size, this.cell_size)
+		},
+
+		create_new: function () {
+			this.get_coord()
+		}
+	}
+	
+	food.create_new()
+}
+
+
+function update_score(){
+	pen.fillStyle = "white";
+	pen.font = "50px Courier New"
+	pen.fillText(game_score, game_canvas.width - 50, 50);
+}
+
+
 function keyboard_control(button_pressed){
 	if(button_pressed.key=="ArrowUp"){
 		snake.direction = "u";
@@ -109,8 +172,6 @@ function keyboard_control(button_pressed){
 	else{
 		snake.direction = "r";
 	}
-
-	console.log(button_pressed.key)
 }
 
 
@@ -118,6 +179,8 @@ function keyboard_control(button_pressed){
 function draw_screen(){
 	snake.clear()
 	snake.draw()
+	food.draw()
+	update_score()
 }
 
 function update_screen(){
