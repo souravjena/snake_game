@@ -1,5 +1,5 @@
 /**
- * @file snakes.js
+ * @file snake.js
  * @author souravjena
  * @breif Plain JS for retro snakes game.
  */
@@ -155,7 +155,7 @@ function init_food (){
 function update_score(){
 	pen.fillStyle = "white";
 	pen.font = "50px Courier New"
-	pen.fillText(game_score, game_canvas.width - 50, 50);
+	pen.fillText(game_score, game_canvas.width - 100, 50);
 }
 
 
